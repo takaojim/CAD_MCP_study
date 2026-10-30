@@ -18,7 +18,7 @@ namespace AutoCADMCP.Server
         private static TcpListener _listener;
         private static bool _isRunning;
         private static CancellationTokenSource _cts;
-        private const int Port = 8964; // Same as Revit MCP for consistency
+        private const int Port = 8965; // Independent port for AutoCAD MCP (Revit MCP uses 8964)
 
         public static bool IsRunning => _isRunning;
 

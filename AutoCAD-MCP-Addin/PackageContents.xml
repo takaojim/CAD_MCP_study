@@ -4,16 +4,30 @@
     Author="AutoCAD MCP Team" 
     ProductCode="{AA3D6B57-5555-46A2-8230-ABCDE1234567}" 
     Name="AutoCAD MCP Tools"
-    Description="AI-Powered AutoCAD Control via Socket"
-    Icon="./Contents/Resources/icon.ico">
+    Description="AI-Powered AutoCAD Control via Socket">
     
     <CompanyDetails Name="AutoCAD MCP Team" Url="https://github.com/shuotao/CAD_MCP_study" Email="support@example.com"/>
 
-    <Components>
-        <RuntimeRequirements OS="Win64" Platform="AutoCAD*" SeriesMin="R24.0" SeriesMax="R25.0" />
-        <ComponentEntry AppName="AutoCADMCP" Version="1.0.0" ModuleName="./Contents/AutoCADMCP.dll" LoadOnAutoCADStartup="True">
+    <!-- AutoCAD 2021 - 2024 (.NET Framework 4.8) -->
+    <Components Description="AutoCAD 2021-2024">
+        <RuntimeRequirements OS="Win64" Platform="AutoCAD" SeriesMin="R24.0" SeriesMax="R24.3" />
+        <ComponentEntry AppName="AutoCADMCP" Version="1.0.0" ModuleName="./Contents/net48/AutoCADMCP.dll" AppType=".Net" LoadOnAutoCADStartup="True">
             <Commands GroupName="MCP">
                 <Command Local="STARTMCP" Global="STARTMCP" />
+                <Command Local="STOPMCP" Global="STOPMCP" />
+                <Command Local="MCPRIBBON" Global="MCPRIBBON" />
+            </Commands>
+        </ComponentEntry>
+    </Components>
+
+    <!-- AutoCAD 2025 - 2026+ (.NET 8.0) -->
+    <Components Description="AutoCAD 2025-2026">
+        <RuntimeRequirements OS="Win64" Platform="AutoCAD" SeriesMin="R25.0" SeriesMax="R26.0" />
+        <ComponentEntry AppName="AutoCADMCP" Version="1.0.0" ModuleName="./Contents/net8.0-windows/AutoCADMCP.dll" AppType=".Net" LoadOnAutoCADStartup="True">
+            <Commands GroupName="MCP">
+                <Command Local="STARTMCP" Global="STARTMCP" />
+                <Command Local="STOPMCP" Global="STOPMCP" />
+                <Command Local="MCPRIBBON" Global="MCPRIBBON" />
             </Commands>
         </ComponentEntry>
     </Components>

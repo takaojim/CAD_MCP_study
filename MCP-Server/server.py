@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 AutoCAD MCP Server (Socket Client Version)
-Connects to AutoCAD C# Add-in via TCP localhost:8964
+Connects to AutoCAD C# Add-in via TCP localhost:8965
 """
 from mcp.server.fastmcp import FastMCP, Context
 from typing import Optional, List, Dict, Any
@@ -13,7 +13,7 @@ import logging
 mcp = FastMCP("AutoCAD-Architect-Server")
 
 HOST = '127.0.0.1'
-PORT = 8964
+PORT = 8965
 
 def send_command(command: str, args: Dict[str, Any] = None) -> str:
     """Send command to AutoCAD Add-in via Socket"""
@@ -34,6 +34,7 @@ def send_command(command: str, args: Dict[str, Any] = None) -> str:
             }
             msg = json.dumps(request)
             s.sendall(msg.encode('utf-8'))
+            s.shutdown(socket.SHUT_WR)
             
             # Receive response (handle potentially large data)
             chunks = []

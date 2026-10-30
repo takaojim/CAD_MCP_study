@@ -1,11 +1,11 @@
 {
-    "mcpServers": {
-        "autocad": {
-            "command": "python",
-            "args": [
-                "MCP-Server/server.py"
-            ],
-            "cwd": "<YOUR_PROJECT_PATH>"
-        }
+  "mcpServers": {
+    "autocad": {
+      "command": "python",
+      "args": [
+        "c:/Users/User/Documents/AntiGravity/CAD MCP/CAD_MCP_study/MCP-Server/server.py"
+      ],
+      "cwd": "c:/Users/User/Documents/AntiGravity/CAD MCP/CAD_MCP_study"
     }
+  }
 }

@@ -1,33 +1,33 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFrameworks>net48;net8.0-windows</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>disable</Nullable>
     <AssemblyName>AutoCADMCP</AssemblyName>
     <RootNamespace>AutoCADMCP</RootNamespace>
     <PlatformTarget>x64</PlatformTarget>
+    <UseWPF>true</UseWPF>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
-  <ItemGroup>
-    <!-- 
-      AutoCAD NuGet packages
-      Note: You might need to adjust versions based on target AutoCAD version.
-      2024 uses .NET 4.8. 2025 uses .NET 8.
-      We stick to .NET 4.8 for broad compatibility (2018-2024).
-    -->
-    <PackageReference Include="AutoCAD.NET" Version="24.0.0.11182" />
-    <PackageReference Include="AutoCAD.NET.Model" Version="24.0.0.11182" />
-    <PackageReference Include="AutoCAD.NET.Core" Version="24.0.0.11182" />
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <PackageReference Include="AutoCAD.NET" Version="24.1.51000" />
+    <PackageReference Include="AutoCAD.NET.Model" Version="24.1.51000" />
+    <PackageReference Include="AutoCAD.NET.Core" Version="24.1.51000" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="WindowsBase" />
     <Reference Include="System.Xaml" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-windows'">
+    <PackageReference Include="AutoCAD.NET" Version="25.0.0" />
+    <PackageReference Include="AutoCAD.NET.Model" Version="25.0.0" />
+    <PackageReference Include="AutoCAD.NET.Core" Version="25.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
 </Project>

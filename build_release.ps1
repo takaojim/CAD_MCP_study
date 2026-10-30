@@ -8,7 +8,7 @@ $PROJECT_DIR = Join-Path $SCRIPT_DIR "AutoCAD-MCP-Addin"
 $OUTPUT_DIR = Join-Path $SCRIPT_DIR "Output"
 $BUNDLE_DIR = "$OUTPUT_DIR\AutoCADMCP.bundle"
 
-Write-Host "Building AutoCAD MCP Package..." -ForegroundColor Cyan
+Write-Host "Building AutoCAD MCP Package (Multi-Targeting)..." -ForegroundColor Cyan
 
 # 1. Build C# Project
 Write-Host "Compiling C# Project..." -ForegroundColor Yellow
@@ -17,30 +17,33 @@ try {
 }
 catch {
     Write-Warning "dotnet build failed. Please ensure .NET SDK is installed."
-    Write-Warning "Skipping compilation check as requested, assuming pre-compiled or future compilation."
 }
 
 # 2. Create Output Structure
 Write-Host "Creating Bundle Structure in Output..." -ForegroundColor Yellow
-if (Test-Path $BUNDLE_DIR) {
-    Remove-Item $BUNDLE_DIR -Recurse -Force
-}
-New-Item -ItemType Directory -Path "$BUNDLE_DIR\Contents" -Force | Out-Null
+New-Item -ItemType Directory -Path "$BUNDLE_DIR\Contents\net48" -Force | Out-Null
+New-Item -ItemType Directory -Path "$BUNDLE_DIR\Contents\net8.0-windows" -Force | Out-Null
 
-# 3. Copy Files (If build succeeded, otherwise placeholders)
+# 3. Copy Files
 Write-Host "Gathering Files..." -ForegroundColor Yellow
-$BinDir = "$PROJECT_DIR\bin\Release\net48"
+$BinDir48 = "$PROJECT_DIR\bin\Release\net48"
+$BinDir80 = "$PROJECT_DIR\bin\Release\net8.0-windows"
 
-if (Test-Path "$BinDir\AutoCADMCP.dll") {
-    Copy-Item "$BinDir\AutoCADMCP.dll" "$BUNDLE_DIR\Contents\"
-    Copy-Item "$BinDir\Newtonsoft.Json.dll" "$BUNDLE_DIR\Contents\"
+if (Test-Path "$BinDir48\AutoCADMCP.dll") {
+    Copy-Item "$BinDir48\AutoCADMCP.dll" "$BUNDLE_DIR\Contents\net48\" -Force
+    Copy-Item "$BinDir48\Newtonsoft.Json.dll" "$BUNDLE_DIR\Contents\net48\" -Force
+    Copy-Item "$BinDir48\AutoCADMCP.dll" "$BUNDLE_DIR\Contents\" -Force
+    Copy-Item "$BinDir48\Newtonsoft.Json.dll" "$BUNDLE_DIR\Contents\" -Force
 }
-else {
-    Write-Warning "Binaries not found. The 'Output' folder will contain the bundle structure but missing DLLs."
+
+if (Test-Path "$BinDir80\AutoCADMCP.dll") {
+    Copy-Item "$BinDir80\AutoCADMCP.dll" "$BUNDLE_DIR\Contents\net8.0-windows\" -Force
+    Copy-Item "$BinDir80\AutoCADMCP.deps.json" "$BUNDLE_DIR\Contents\net8.0-windows\" -Force
+    Copy-Item "$BinDir80\Newtonsoft.Json.dll" "$BUNDLE_DIR\Contents\net8.0-windows\" -Force
 }
 
 # PackageContents.xml
-Copy-Item "$PROJECT_DIR\PackageContents.xml" "$BUNDLE_DIR\"
+Copy-Item "$PROJECT_DIR\PackageContents.xml" "$BUNDLE_DIR\" -Force
 
 Write-Host "Build Complete!" -ForegroundColor Green
 Write-Host "Bundle Location: $BUNDLE_DIR"

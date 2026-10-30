@@ -3,7 +3,7 @@
 > ⚠️ 注意：本專案僅支援 **AutoCAD 完整版** (2021+)。
 > ⚠️ 本機開發備註：因權限限制，本專案提供 `build_release.ps1` 供製作攜帶版安裝包。
 
-本專案參考 **Revit MCP** 架構，採用 Socket 通訊模式 (Port 8964)。AI 透過 MCP Server 發送指令，由 C# Add-in 在 AutoCAD 內部執行。
+本專案參考 **Revit MCP** 架構，採用 Socket 通訊模式 (Port 8965)。AI 透過 MCP Server 發送指令，由 C# Add-in 在 AutoCAD 內部執行。
 
 ## 📋 前置需求 (Pre-requisites)
 
@@ -13,7 +13,7 @@
 |------|------|------|
 | **Python 3.8+** | 執行 MCP Server | [下載 Python 3.12](https://www.python.org/downloads/) |
 | **.NET SDK 8.0+** | 編譯 C# Add-in | 必要 |
-| **AutoCAD 完整版** | 2021-2024 | *不支援 LT 版* |
+| **AutoCAD 完整版** | 2021-2026+ (包含 2022 與 2026) | *不支援 LT 版* |
 
 > ⚠️ **首次 Clone 使用者注意**：Clone 完成後，請先執行以下指令安裝 Python 套件：
 > ```powershell
@@ -32,7 +32,7 @@
 外部 AI 平台 (Claude Desktop / VS Code / Antigravity)
       ↓ MCP Protocol (stdio)
 MCP-Server (Python)
-      ↓ TCP Socket (127.0.0.1:8964)
+      ↓ TCP Socket (127.0.0.1:8965)
 AutoCADMCP.dll (C# Add-in)
       ↓ .NET API
 AutoCAD
@@ -270,8 +270,8 @@ AI：[呼叫 get_layers] 目前有 8 個圖層：0, A-WALL, A-DOOR...
 > **警告**: 本專案設計用於**本機開發環境**，請勿將 Socket Port 暴露於公網！
 
 #### 網路安全
-- ✅ Socket 僅監聽 `127.0.0.1:8964` (localhost)
-- ❌ **禁止**將 Port 8964 對外開放 (防火牆/NAT)
+- ✅ Socket 僅監聽 `127.0.0.1:8965` (localhost)
+- ❌ **禁止**將 Port 8965 對外開放 (防火牆/NAT)
 - ❌ **禁止**修改為 `0.0.0.0` 綁定
 
 #### 輸入驗證
