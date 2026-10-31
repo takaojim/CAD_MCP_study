@@ -9,6 +9,16 @@ $TARGET_DIR = "$env:APPDATA\Autodesk\ApplicationPlugins\AutoCADMCP.bundle"
 
 Write-Host "Build and Deploy AutoCAD MCP..." -ForegroundColor Cyan
 
+# 0. Check running AutoCAD processes and wait if necessary
+$acadProc = Get-Process acad -ErrorAction SilentlyContinue
+if ($acadProc) {
+    Write-Host "AutoCAD is currently running. Please close AutoCAD so files can be replaced..." -ForegroundColor Yellow
+    while (Get-Process acad -ErrorAction SilentlyContinue) {
+        Start-Sleep -Seconds 1
+    }
+    Write-Host "AutoCAD closed. Proceeding with deployment..." -ForegroundColor Green
+}
+
 # 1. Build C# Project (net48 and net8.0-windows)
 Write-Host "Building C# Project (Multi-Targeting net48 & net8.0-windows)..." -ForegroundColor Yellow
 dotnet build "$PROJECT_DIR\AutoCADMCP.csproj" -c Release
