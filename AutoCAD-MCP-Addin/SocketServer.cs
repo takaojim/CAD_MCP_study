@@ -22,6 +22,19 @@ namespace AutoCADMCP.Server
 
         public static bool IsRunning => _isRunning;
 
+        private static void Log(string msg)
+        {
+            try
+            {
+                var doc = Application.DocumentManager?.MdiActiveDocument;
+                if (doc != null)
+                {
+                    doc.Editor.WriteMessage(msg);
+                }
+            }
+            catch { }
+        }
+
         public static async void Start()
         {
             if (_isRunning) return;
@@ -33,7 +46,7 @@ namespace AutoCADMCP.Server
                 _isRunning = true;
                 _cts = new CancellationTokenSource();
 
-                Application.DocumentManager.MdiActiveDocument.Editor.WriteMessage($"\n[MCP] Server started on port {Port}");
+                Log($"\n[MCP] Server started on port {Port}\n");
 
                 while (_isRunning && !_cts.Token.IsCancellationRequested)
                 {
@@ -50,13 +63,13 @@ namespace AutoCADMCP.Server
                     catch (Exception ex)
                     {
                         if (_isRunning)
-                            Application.DocumentManager.MdiActiveDocument.Editor.WriteMessage($"\n[MCP] Accept error: {ex.Message}");
+                            Log($"\n[MCP] Accept error: {ex.Message}\n");
                     }
                 }
             }
             catch (Exception ex)
             {
-                Application.DocumentManager.MdiActiveDocument.Editor.WriteMessage($"\n[MCP] Server start failed: {ex.Message}");
+                Log($"\n[MCP] Server start failed: {ex.Message}\n");
                 _isRunning = false;
             }
         }
@@ -68,7 +81,7 @@ namespace AutoCADMCP.Server
             _isRunning = false;
             _cts?.Cancel();
             _listener?.Stop();
-            Application.DocumentManager.MdiActiveDocument.Editor.WriteMessage($"\n[MCP] Server stopped");
+            Log($"\n[MCP] Server stopped\n");
         }
 
         private static async Task HandleClientAsync(TcpClient client, CancellationToken token)
@@ -83,15 +96,10 @@ namespace AutoCADMCP.Server
                 {
                     try
                     {
-                        // Set a timeout for reading to detect end of current "packet" 
-                        // Note: For a more robust protocol, we should send length first
-                        // but for simplicity we assume the whole message arrives since it's localhost
                         int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, token);
                         if (bytesRead == 0) break;
 
                         string jsonPart = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                        
-                        // Basic JSON completeness check (simplified for this use case)
                         var request = JsonConvert.DeserializeObject<McpRequest>(jsonPart);
 
                         if (request != null)
