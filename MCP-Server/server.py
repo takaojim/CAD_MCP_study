@@ -8,6 +8,12 @@ from typing import Optional, List, Dict, Any
 import socket
 import json
 import logging
+import sys
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
 
 # Initialize FastMCP
 mcp = FastMCP("AutoCAD-Architect-Server")
@@ -259,12 +265,6 @@ def analyze_coordinates(ctx: Context, marker_size: float = 1000) -> str:
     return send_command("analyze_coordinates", {"marker_size": marker_size})
 
 if __name__ == "__main__":
-    print("🏗️ AutoCAD MCP Server (建築師版) 啟動中...")
-    print("📋 可用工具：")
-    print("   繪圖工具：draw_line, draw_circle, draw_wall")
-    print("   圖層管理：create_layer, get_layers, set_layer_color")
-    print("   圖塊工具：get_blocks_in_view, rename_block, update_block_description")
-    print("   圖面整理：find_overlaps, clean_overlaps, connect_lines")
-    print("   其他工具：create_new_drawing")
+    print("AutoCAD MCP Server starting...", file=sys.stderr)
     mcp.run()
 

@@ -24,3 +24,11 @@ build/
 Output/
 AutoCAD-MCP-Addin/bin/
 AutoCAD-MCP-Addin/obj/
+
+# Temporary & Scratch
+scratch/
+.gemini/
+
+# Inspection Reports
+*.html
+*.pdf
