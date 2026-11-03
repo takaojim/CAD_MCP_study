@@ -1,0 +1,4 @@
+interface:
+  display_name: "結構桿件尺寸總表"
+  short_description: "將結構圖 PDF 或圖片中的各樓層桿件尺寸表整理成 Excel 總表。"
+  default_prompt: "請將這份結構桿件尺寸 PDF 整理成各樓層結構桿件尺寸總表，輸出 Excel。"
