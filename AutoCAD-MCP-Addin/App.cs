@@ -294,102 +294,47 @@ namespace AutoCADMCP
         {
             try
             {
-                // Find existing tab: "外掛程式" or "增益集" or "Add-ins"
-                RibbonTab targetTab = null;
+                // Send2Rvt is provided natively by Send2Rvt.AutoCad.bundle.
+                // We ensure there is at most ONE Send2Rvt panel in the Add-ins tab.
                 foreach (RibbonTab t in ribbon.Tabs)
                 {
                     if (t.Title != null && AddinTabNames.Any(name => string.Equals(t.Title.Trim(), name, StringComparison.OrdinalIgnoreCase)))
                     {
-                        targetTab = t;
-                        break;
-                    }
-                    if (t.Id != null && (t.Id.IndexOf("TabAddOns", StringComparison.OrdinalIgnoreCase) >= 0 || t.Id.IndexOf("AddIns", StringComparison.OrdinalIgnoreCase) >= 0))
-                    {
-                        targetTab = t;
-                        break;
-                    }
-                }
-
-                // If not found, create "外掛程式" tab
-                if (targetTab == null)
-                {
-                    targetTab = new RibbonTab
-                    {
-                        Id = "ID_TabAddOns",
-                        Title = "外掛程式"
-                    };
-                    ribbon.Tabs.Add(targetTab);
-                }
-
-                // Check if Send2Rvt button/panel already exists
-                bool panelExists = false;
-                foreach (RibbonPanel p in targetTab.Panels)
-                {
-                    if (p.Source != null)
-                    {
-                        if (string.Equals(p.Source.Title, "Send2Rvt", StringComparison.OrdinalIgnoreCase) ||
-                            string.Equals(p.Source.Id, "Send2RvtPanel", StringComparison.OrdinalIgnoreCase))
+                        var send2rvtPanels = new List<RibbonPanel>();
+                        foreach (var p in t.Panels)
                         {
-                            panelExists = true;
-                            break;
-                        }
-                        foreach (RibbonItem item in p.Source.Items)
-                        {
-                            if (item is RibbonButton btn && (btn.Text != null && btn.Text.Contains("Revit")))
+                            if (p?.Source == null) continue;
+                            bool isSend2Rvt =
+                                string.Equals(p.Source.Id, "Send2RvtPanel", StringComparison.OrdinalIgnoreCase) ||
+                                string.Equals(p.Source.Title?.Trim(), "Send2Rvt", StringComparison.OrdinalIgnoreCase) ||
+                                p.Source.Items.Any(item =>
+                                    string.Equals(item.Id, "btnSend2Rvt_MCP", StringComparison.OrdinalIgnoreCase) ||
+                                    (item.Text != null && item.Text.Contains("傳送至")) ||
+                                    (item is RibbonButton rb && rb.CommandParameter?.ToString()?.Trim() == "SEND2RVT"));
+
+                            if (isSend2Rvt)
                             {
-                                panelExists = true;
-                                break;
+                                send2rvtPanels.Add(p);
                             }
+                        }
+
+                        // If multiple Send2Rvt panels exist, keep only the first valid one and remove duplicates
+                        if (send2rvtPanels.Count > 1)
+                        {
+                            for (int i = 1; i < send2rvtPanels.Count; i++)
+                            {
+                                t.Panels.Remove(send2rvtPanels[i]);
+                            }
+                            LogEditor($"\n[MCP] Deduplicated Send2Rvt panels: removed {send2rvtPanels.Count - 1} extra panel(s).\n");
                         }
                     }
                 }
-
-                if (!panelExists)
-                {
-                    RibbonPanelSource panelSource = new RibbonPanelSource
-                    {
-                        Id = "Send2RvtPanel",
-                        Title = "Send2Rvt"
-                    };
-                    RibbonPanel panel = new RibbonPanel
-                    {
-                        Source = panelSource
-                    };
-
-                    var sendIcon32 = CreateSendToRvtIcon(32);
-                    var sendIcon16 = CreateSendToRvtIcon(16);
-
-                    RibbonButton btnSend = new RibbonButton
-                    {
-                        Id = "btnSend2Rvt_MCP",
-                        Text = "傳送至\nRevit",
-                        ShowText = true,
-                        ShowImage = sendIcon32 != null,
-                        LargeImage = sendIcon32,
-                        Image = sendIcon16,
-                        Size = RibbonItemSize.Large,
-                        Orientation = System.Windows.Controls.Orientation.Vertical,
-                        CommandParameter = "SEND2RVT ",
-                        CommandHandler = new RelayCommand(_ =>
-                        {
-                            var doc = Application.DocumentManager.MdiActiveDocument;
-                            if (doc != null)
-                            {
-                                doc.SendStringToExecute("SEND2RVT ", true, false, true);
-                            }
-                        })
-                    };
-
-                    panelSource.Items.Add(btnSend);
-                    targetTab.Panels.Add(panel);
-                }
-
                 return true;
             }
             catch (System.Exception ex)
             {
-                LogEditor($"\n[MCP] Error ensuring Send2Rvt button: {ex.Message}\n");
-                return false;
+                LogEditor($"\n[MCP] Ribbon cleanup notice: {ex.Message}\n");
+                return true;
             }
         }
 
