@@ -1,0 +1,4 @@
+interface:
+  display_name: "CAD to Revit Sheet Sync"
+  short_description: "Synchronize drawing sheet indexes from CAD/PDF to Revit ViewSheets and Schedule tables with automatic typo and duplicate correction."
+  default_model: "inherit"
